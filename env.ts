@@ -1,15 +1,12 @@
-// env.ts
 import dotenv from 'dotenv';
 import { z } from 'zod';
 
-// Determine application stage
 process.env.APP_STAGE = process.env.APP_STAGE || 'dev';
 
 const isProduction = process.env.APP_STAGE === 'production';
 const isDevelopment = process.env.APP_STAGE === 'dev';
 const isTest = process.env.APP_STAGE === 'test';
 
-// Load environment files based on the stage
 if (isDevelopment) {
    dotenv.config({ path: '.env' });
    console.log(' Loaded .env (development)');
@@ -20,7 +17,6 @@ if (isDevelopment) {
    console.log(' Using production environment variables');
 }
 
-// Define validation schema with Zod
 const envSchema = z.object({
    NODE_ENV: z
       .enum(['development', 'production', 'test'])
@@ -56,7 +52,6 @@ const envSchema = z.object({
       .default(isProduction ? 'info' : 'debug'),
 });
 
-// Parse and validate environment variables
 let env: z.infer<typeof envSchema>;
 
 try {
@@ -70,11 +65,9 @@ try {
    throw error;
 }
 
-// Helper functions
 export const isProd = () => env.APP_STAGE === 'production';
 export const isDev = () => env.APP_STAGE === 'dev';
 export const isTestEnv = () => env.APP_STAGE === 'test';
 
-// Export the validated environment
 export { env };
 export default env;

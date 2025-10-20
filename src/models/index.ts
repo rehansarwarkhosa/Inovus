@@ -1,24 +1,23 @@
-// single-entry import for all models
-import User from "./User";
-import Role from "./Role";
-import Policy from "./Policy";
-import RolePolicy from "./RolePolicy";
-import Plan from "./Plan";
-import Feature from "./Feature";
-import PlanFeature from "./PlanFeature";
-import UserPlan from "./UserPlan";
-import PlanHistory from "./PlanHistory";
-import UserFeature from "./UserFeature";
+import User from './User.model';
+import Role from './Role.model';
+import Policy from './Policy.model';
+import RolePolicy from './RolePolicy.model';
+import Plan from './Plan.model';
+import Feature from './Feature.model';
+import PlanFeature from './PlanFeature.model';
+import UserPlan from './UserPlan.model';
+import PlanHistory from './PlanHistory.model';
+import UserFeature from './UserFeature.model';
 
 export {
-  User,
-  Role,
-  Policy,
-  RolePolicy,
-  Plan,
-  Feature,
-  PlanFeature,
-  UserPlan,
-  PlanHistory,
-  UserFeature,
+   User,
+   Role,
+   Policy,
+   RolePolicy,
+   Plan,
+   Feature,
+   PlanFeature,
+   UserPlan,
+   PlanHistory,
+   UserFeature,
 };
