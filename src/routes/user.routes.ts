@@ -1,15 +1,21 @@
 import { Router } from 'express';
-import { body, param } from 'express-validator';
+import { z } from 'zod';
 import userController from '../controllers/user.controller';
-import { validate } from '../middleware/validation.middleware';
+import { validateParams, validateBody } from '../middleware/validation.middleware';
 import { authenticate, authorize } from '../middleware/auth.middleware';
 
 const router = Router();
 
-/**
- * All routes in this file are protected
- * They require authentication middleware
- */
+// Validation schemas
+const mongoIdSchema = z.object({
+  id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid user ID'),
+});
+
+const updateUserSchema = z.object({
+  name: z.string().trim().min(1, 'Name cannot be empty').optional(),
+  firstName: z.string().trim().optional(),
+  lastName: z.string().trim().optional(),
+});
 
 /**
  * @route   GET /api/users
@@ -23,12 +29,7 @@ router.get('/', authenticate, authorize('admin'), userController.getAllUsers);
  * @desc    Get user by ID
  * @access  Protected
  */
-router.get(
-  '/:id',
-  [param('id').isMongoId().withMessage('Invalid user ID'), validate],
-  authenticate,
-  userController.getUserById
-);
+router.get('/:id', validateParams(mongoIdSchema), authenticate, userController.getUserById);
 
 /**
  * @route   PUT /api/users/:id
@@ -37,13 +38,8 @@ router.get(
  */
 router.put(
   '/:id',
-  [
-    param('id').isMongoId().withMessage('Invalid user ID'),
-    body('name').optional().trim().notEmpty().withMessage('Name cannot be empty'),
-    body('firstName').optional().trim(),
-    body('lastName').optional().trim(),
-    validate,
-  ],
+  validateParams(mongoIdSchema),
+  validateBody(updateUserSchema),
   authenticate,
   userController.updateUser
 );
@@ -55,7 +51,7 @@ router.put(
  */
 router.delete(
   '/:id',
-  [param('id').isMongoId().withMessage('Invalid user ID'), validate],
+  validateParams(mongoIdSchema),
   authenticate,
   authorize('admin'),
   userController.deleteUser

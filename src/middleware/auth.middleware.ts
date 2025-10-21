@@ -1,21 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import { verifyAccessToken, TokenPayload } from '../utils/jwt';
+import { verifyAccessToken } from '../utils/jwt';
 import { UnauthorizedError } from '../utils/errors';
 
-// Extend Express Request to include user property
-declare global {
-  namespace Express {
-    interface Request {
-      user?: TokenPayload;
-    }
-  }
-}
-
-export const authenticate = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+export async function authenticate(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
 
@@ -23,7 +9,7 @@ export const authenticate = async (
       throw new UnauthorizedError('No token provided');
     }
 
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    const token = authHeader.substring(7);
 
     const decoded = verifyAccessToken(token);
     req.user = decoded;
@@ -36,11 +22,10 @@ export const authenticate = async (
       next(new UnauthorizedError('Invalid or expired token'));
     }
   }
-};
+}
 
-// Optional: Role-based access control middleware
-export const authorize = (...allowedRoles: string[]) => {
-  return (req: Request, res: Response, next: NextFunction): void => {
+export function authorize(...allowedRoles) {
+  return (req, res, next) => {
     if (!req.user) {
       next(new UnauthorizedError('User not authenticated'));
       return;
@@ -53,4 +38,4 @@ export const authorize = (...allowedRoles: string[]) => {
 
     next();
   };
-};
+}

@@ -1,90 +1,73 @@
 import { Router } from 'express';
-import { body } from 'express-validator';
+import { z } from 'zod';
 import authController from '../controllers/auth.controller';
-import { validate } from '../middleware/validation.middleware';
+import { validateBody } from '../middleware/validation.middleware';
 import { authenticate } from '../middleware/auth.middleware';
 
 const router = Router();
+
+// Validation schemas
+const signupSchema = z.object({
+  name: z.string().trim().min(1, 'Name is required'),
+  email: z.string().email('Valid email is required'),
+  phone: z.string().trim().min(1, 'Phone number is required'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  firstName: z.string().trim().optional(),
+  lastName: z.string().trim().optional(),
+});
+
+const loginSchema = z.object({
+  email: z.string().email('Valid email is required'),
+  password: z.string().min(1, 'Password is required'),
+});
+
+const forgotPasswordSchema = z.object({
+  email: z.string().email('Valid email is required'),
+});
+
+const resetPasswordSchema = z.object({
+  token: z.string().min(1, 'Reset token is required'),
+  newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+const refreshTokenSchema = z.object({
+  refreshToken: z.string().min(1, 'Refresh token is required'),
+});
 
 /**
  * @route   POST /api/auth/signup
  * @desc    Register a new user
  * @access  Public
  */
-router.post(
-  '/signup',
-  [
-    body('name').trim().notEmpty().withMessage('Name is required'),
-    body('email').isEmail().withMessage('Valid email is required'),
-    body('phone')
-      .trim()
-      .notEmpty()
-      .withMessage('Phone number is required')
-      .isMobilePhone('any')
-      .withMessage('Valid phone number is required'),
-    body('password')
-      .isLength({ min: 8 })
-      .withMessage('Password must be at least 8 characters'),
-    body('firstName').optional().trim(),
-    body('lastName').optional().trim(),
-    validate,
-  ],
-  authController.signup
-);
+router.post('/signup', validateBody(signupSchema), authController.signup);
 
 /**
  * @route   POST /api/auth/login
  * @desc    Login user
  * @access  Public
  */
-router.post(
-  '/login',
-  [
-    body('email').isEmail().withMessage('Valid email is required'),
-    body('password').notEmpty().withMessage('Password is required'),
-    validate,
-  ],
-  authController.login
-);
+router.post('/login', validateBody(loginSchema), authController.login);
 
 /**
  * @route   POST /api/auth/forgot-password
  * @desc    Request password reset
  * @access  Public
  */
-router.post(
-  '/forgot-password',
-  [body('email').isEmail().withMessage('Valid email is required'), validate],
-  authController.forgotPassword
-);
+router.post('/forgot-password', validateBody(forgotPasswordSchema), authController.forgotPassword);
 
 /**
  * @route   POST /api/auth/reset-password
  * @desc    Reset password with token
  * @access  Public
  */
-router.post(
-  '/reset-password',
-  [
-    body('token').notEmpty().withMessage('Reset token is required'),
-    body('newPassword')
-      .isLength({ min: 8 })
-      .withMessage('Password must be at least 8 characters'),
-    validate,
-  ],
-  authController.resetPassword
-);
+router.post('/reset-password', validateBody(resetPasswordSchema), authController.resetPassword);
 
 /**
  * @route   POST /api/auth/refresh
  * @desc    Refresh access token
  * @access  Public
  */
-router.post(
-  '/refresh',
-  [body('refreshToken').notEmpty().withMessage('Refresh token is required'), validate],
-  authController.refreshToken
-);
+router.post('/refresh', validateBody(refreshTokenSchema), authController.refreshToken);
 
 /**
  * @route   GET /api/auth/me

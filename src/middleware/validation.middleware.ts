@@ -1,23 +1,63 @@
-import { Request, Response, NextFunction } from 'express';
-import { validationResult } from 'express-validator';
+import { z } from 'zod';
 import { ValidationError } from '../utils/errors';
 
-export const validate = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
-  const errors = validationResult(req);
+/**
+ * Zod validation middleware
+ * Validates request body, query, or params against a Zod schema
+ */
+export function validateBody(schema) {
+  return (req, res, next) => {
+    try {
+      req.body = schema.parse(req.body);
+      next();
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const errorMessages = error.issues.map((err) => ({
+          field: err.path.join('.'),
+          message: err.message,
+        }));
+        next(new ValidationError(JSON.stringify(errorMessages)));
+      } else {
+        next(error);
+      }
+    }
+  };
+}
 
-  if (!errors.isEmpty()) {
-    const errorMessages = errors.array().map((err) => ({
-      field: err.type === 'field' ? err.path : undefined,
-      message: err.msg,
-    }));
+export function validateQuery(schema) {
+  return (req, res, next) => {
+    try {
+      req.query = schema.parse(req.query);
+      next();
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const errorMessages = error.issues.map((err) => ({
+          field: err.path.join('.'),
+          message: err.message,
+        }));
+        next(new ValidationError(JSON.stringify(errorMessages)));
+      } else {
+        next(error);
+      }
+    }
+  };
+}
 
-    next(new ValidationError(JSON.stringify(errorMessages)));
-    return;
-  }
-
-  next();
-};
+export function validateParams(schema) {
+  return (req, res, next) => {
+    try {
+      req.params = schema.parse(req.params);
+      next();
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const errorMessages = error.issues.map((err) => ({
+          field: err.path.join('.'),
+          message: err.message,
+        }));
+        next(new ValidationError(JSON.stringify(errorMessages)));
+      } else {
+        next(error);
+      }
+    }
+  };
+}

@@ -1,14 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/errors';
 import { sendError } from '../utils/response';
 import { env } from '../../env';
 
-export const errorHandler = (
-  err: Error | AppError,
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
+export function errorHandler(err, req, res, next) {
   if (err instanceof AppError) {
     sendError(res, err.message, err.statusCode);
     return;
@@ -24,13 +18,8 @@ export const errorHandler = (
       : err.message || 'Internal server error';
 
   sendError(res, message, 500);
-};
+}
 
-// 404 handler for undefined routes
-export const notFoundHandler = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
+export function notFoundHandler(req, res, next) {
   sendError(res, `Route ${req.originalUrl} not found`, 404);
-};
+}
