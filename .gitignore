@@ -69,6 +69,7 @@ prisma/*.db-journal
 # -------------------------
 docker-compose.override.yml
 .dockerignore
+CLAUDE.md
 
 
 
