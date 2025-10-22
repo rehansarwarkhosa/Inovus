@@ -1,9 +1,9 @@
 import { User, Email, Phone } from '../models/index.js';
 import {
-  ConflictError,
-  UnauthorizedError,
-  NotFoundError,
-  ValidationError,
+  createConflictError,
+  createUnauthorizedError,
+  createNotFoundError,
+  createValidationError,
 } from '../utils/errors.js';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.js';
 
@@ -13,13 +13,13 @@ async function signup(data) {
   // Check if email already exists
   const existingEmail = await Email.findOne({ email: email.toLowerCase() });
   if (existingEmail) {
-    throw new ConflictError('Email already registered');
+    throw createConflictError('Email already registered');
   }
 
   // Check if phone already exists
   const existingPhone = await Phone.findOne({ phone });
   if (existingPhone) {
-    throw new ConflictError('Phone number already registered');
+    throw createConflictError('Phone number already registered');
   }
 
   // Create user
@@ -78,20 +78,20 @@ async function login(data) {
   }).populate('userId');
 
   if (!emailRecord || !emailRecord.userId) {
-    throw new UnauthorizedError('Invalid email or password');
+    throw createUnauthorizedError('Invalid email or password');
   }
 
   const user = emailRecord.userId;
 
   // Check if user is deleted
   if (user.isDeleted) {
-    throw new UnauthorizedError('Account has been deactivated');
+    throw createUnauthorizedError('Account has been deactivated');
   }
 
   // Verify password
   const isPasswordValid = await user.comparePassword(password);
   if (!isPasswordValid) {
-    throw new UnauthorizedError('Invalid email or password');
+    throw createUnauthorizedError('Invalid email or password');
   }
 
   // Generate tokens
@@ -156,7 +156,7 @@ async function refreshAccessToken(refreshToken) {
     // Verify user still exists and is active
     const user = await User.findById(decoded.userId);
     if (!user || user.isDeleted) {
-      throw new UnauthorizedError('Invalid refresh token');
+      throw createUnauthorizedError('Invalid refresh token');
     }
 
     // Generate new access token
@@ -170,7 +170,7 @@ async function refreshAccessToken(refreshToken) {
 
     return { accessToken };
   } catch (error) {
-    throw new UnauthorizedError('Invalid or expired refresh token');
+    throw createUnauthorizedError('Invalid or expired refresh token');
   }
 }
 

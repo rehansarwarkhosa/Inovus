@@ -3,8 +3,8 @@ const { Schema } = mongoose;
 
 const RolePolicySchema = new Schema(
   {
-    roleId: { type: Schema.Types.ObjectId, ref: "Role", required: true, index: true },
-    policyId: { type: Schema.Types.ObjectId, ref: "Policy", required: true, index: true },
+    roleId: { type: Number, ref: "Role", required: true, index: true },
+    policyId: { type: Number, ref: "Policy", required: true, index: true },
     notes: { type: String }
   },
   { timestamps: true }

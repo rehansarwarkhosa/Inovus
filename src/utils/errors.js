@@ -1,54 +1,44 @@
-class AppError extends Error {
-  constructor(message, statusCode) {
-    super(message);
-    this.statusCode = statusCode;
-    this.isOperational = true;
-    Error.captureStackTrace(this, this.constructor);
-  }
-}
+const createError = (message, statusCode, isOperational = true) => {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  error.isOperational = isOperational;
+  return error;
+};
 
-class ValidationError extends AppError {
-  constructor(message = 'Validation failed') {
-    super(message, 400);
+const createValidationError = (message = 'Validation failed', errors = null) => {
+  const error = createError(message, 400);
+  if (errors) {
+    error.errors = errors;
   }
-}
+  return error;
+};
 
-class UnauthorizedError extends AppError {
-  constructor(message = 'Unauthorized access') {
-    super(message, 401);
-  }
-}
+const createUnauthorizedError = (message = 'Unauthorized access') => {
+  return createError(message, 401);
+};
 
-class ForbiddenError extends AppError {
-  constructor(message = 'Forbidden access') {
-    super(message, 403);
-  }
-}
+const createForbiddenError = (message = 'Forbidden access') => {
+  return createError(message, 403);
+};
 
-class NotFoundError extends AppError {
-  constructor(message = 'Resource not found') {
-    super(message, 404);
-  }
-}
+const createNotFoundError = (message = 'Resource not found') => {
+  return createError(message, 404);
+};
 
-class ConflictError extends AppError {
-  constructor(message = 'Resource already exists') {
-    super(message, 409);
-  }
-}
+const createConflictError = (message = 'Resource already exists') => {
+  return createError(message, 409);
+};
 
-class InternalServerError extends AppError {
-  constructor(message = 'Internal server error') {
-    super(message, 500);
-  }
-}
+const createInternalServerError = (message = 'Internal server error') => {
+  return createError(message, 500);
+};
 
 export {
-  AppError,
-  ValidationError,
-  UnauthorizedError,
-  ForbiddenError,
-  NotFoundError,
-  ConflictError,
-  InternalServerError
+  createError,
+  createValidationError,
+  createUnauthorizedError,
+  createForbiddenError,
+  createNotFoundError,
+  createConflictError,
+  createInternalServerError
 };

@@ -1,6 +1,6 @@
 import { User } from '../models/index.js';
 import { sendSuccess } from '../utils/response.js';
-import { NotFoundError } from '../utils/errors.js';
+import { createNotFoundError } from '../utils/errors.js';
 
 async function getAllUsers(req, res, next) {
   try {
@@ -23,7 +23,7 @@ async function getUserById(req, res, next) {
       .populate('role');
 
     if (!user) {
-      throw new NotFoundError('User not found');
+      throw createNotFoundError('User not found');
     }
 
     sendSuccess(res, { user });
@@ -40,7 +40,7 @@ async function updateUser(req, res, next) {
     const user = await User.findOne({ _id: id, isDeleted: false });
 
     if (!user) {
-      throw new NotFoundError('User not found');
+      throw createNotFoundError('User not found');
     }
 
     if (name) user.name = name;
@@ -62,7 +62,7 @@ async function deleteUser(req, res, next) {
     const user = await User.findOne({ _id: id, isDeleted: false });
 
     if (!user) {
-      throw new NotFoundError('User not found');
+      throw createNotFoundError('User not found');
     }
 
     user.isDeleted = true;

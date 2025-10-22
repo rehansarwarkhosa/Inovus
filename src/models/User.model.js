@@ -8,7 +8,7 @@ const UserSchema = new Schema(
     firstName: { type: String, trim: true },
     lastName: { type: String, trim: true },
     password: { type: String, required: true },
-    role: { type: Schema.Types.ObjectId, ref: "Role", index: true },
+    role: { type: Number, ref: "Role", index: true },
     isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true }

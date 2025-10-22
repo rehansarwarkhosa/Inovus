@@ -1,10 +1,10 @@
-import { AppError } from '../utils/errors';
-import { sendError } from '../utils/response';
-import env from '../../env';
+import { sendError } from '../utils/response.js';
+import env from '../../env.js';
 
 function errorHandler(err, req, res, next) {
-  if (err instanceof AppError) {
-    sendError(res, err.message, err.statusCode);
+  // Check if error has statusCode (operational error)
+  if (err.statusCode && err.isOperational) {
+    sendError(res, err.message, err.statusCode, err.errors);
     return;
   }
 

@@ -1,12 +1,12 @@
-import { verifyAccessToken } from '../utils/jwt';
-import { UnauthorizedError } from '../utils/errors';
+import { verifyAccessToken } from '../utils/jwt.js';
+import { createUnauthorizedError } from '../utils/errors.js';
 
 async function authenticate(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedError('No token provided');
+      throw createUnauthorizedError('No token provided');
     }
 
     const token = authHeader.substring(7);
@@ -16,10 +16,10 @@ async function authenticate(req, res, next) {
 
     next();
   } catch (error) {
-    if (error instanceof UnauthorizedError) {
+    if (error.statusCode === 401) {
       next(error);
     } else {
-      next(new UnauthorizedError('Invalid or expired token'));
+      next(createUnauthorizedError('Invalid or expired token'));
     }
   }
 }
@@ -27,12 +27,12 @@ async function authenticate(req, res, next) {
 function authorize(...allowedRoles) {
   return (req, res, next) => {
     if (!req.user) {
-      next(new UnauthorizedError('User not authenticated'));
+      next(createUnauthorizedError('User not authenticated'));
       return;
     }
 
     if (allowedRoles.length && !allowedRoles.includes(req.user.role || '')) {
-      next(new UnauthorizedError('Insufficient permissions'));
+      next(createUnauthorizedError('Insufficient permissions'));
       return;
     }
 

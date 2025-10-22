@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const UserFeatureSchema = new Schema(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
-    featureId: { type: Schema.Types.ObjectId, ref: "Feature", required: true, index: true },
+    featureId: { type: Number, ref: "Feature", required: true, index: true },
     totalQuantity: { type: Number, default: 0 },
     usedQuantity: { type: Number, default: 0 },
   },

@@ -3,8 +3,8 @@ const { Schema } = mongoose;
 
 const PlanFeatureSchema = new Schema(
   {
-    planId: { type: Schema.Types.ObjectId, ref: "Plan", required: true, index: true },
-    featureId: { type: Schema.Types.ObjectId, ref: "Feature", required: true, index: true },
+    planId: { type: Number, ref: "Plan", required: true, index: true },
+    featureId: { type: Number, ref: "Feature", required: true, index: true },
     quantity: { type: Number, default: null },
   },
   { timestamps: true }

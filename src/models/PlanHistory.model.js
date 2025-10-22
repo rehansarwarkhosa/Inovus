@@ -10,7 +10,7 @@ const PlanHistorySchema = new Schema(
          index: true,
       },
       planId: {
-         type: Schema.Types.ObjectId,
+         type: Number,
          ref: 'Plan',
          required: true,
          index: true,
