@@ -1,15 +1,27 @@
-# codebase
+# Inovus Backend API
 
-To install dependencies:
+A Node.js/Express backend built with **plain JavaScript** and Bun, implementing real estate management with RBAC, subscription plans, and feature management.
 
+## Prerequisites
+- Bun (latest)
+- MongoDB
+
+## Quick Start
 ```bash
 bun install
+cp .env.example .env
+# Update DATABASE_URL in .env
+bun run dev
 ```
 
-To run:
+## API Endpoints
+- `POST /api/auth/signup` - Register
+- `POST /api/auth/login` - Login
+- `GET /api/auth/me` - Current user (protected)
+- `GET /api/users` - All users (admin)
 
-```bash
-bun run 
-```
-
-This project was created using `bun init` in bun v1.2.21. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+## Auto-Seeded Data
+On startup, creates:
+- Roles: Super Admin, Admin, Agent
+- Plans: Starter ($1000), Professional ($2500), Enterprise ($5000)
+- Features: Property Listings, Lead Management, Analytics

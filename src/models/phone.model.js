@@ -1,17 +1,7 @@
-import mongoose, { Document, Schema, Model } from "mongoose";
+import mongoose from "mongoose";
+const { Schema } = mongoose;
 
-export interface IPhone extends Document {
-  userId: mongoose.Types.ObjectId;
-  phone: string;
-  countryCode?: string;
-  isPrimary?: boolean;
-  isVerified?: boolean;
-  description?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-const PhoneSchema = new Schema<IPhone>(
+const PhoneSchema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
@@ -28,10 +18,8 @@ const PhoneSchema = new Schema<IPhone>(
   { timestamps: true }
 );
 
-/* Phone indexes */
 PhoneSchema.index({ phone: 1 }, { unique: false });
 PhoneSchema.index({ userId: 1, phone: 1 }, { unique: true });
 
-const Phone: Model<IPhone> =
-  mongoose.models.Phone || mongoose.model<IPhone>("Phone", PhoneSchema);
+const Phone = mongoose.models.Phone || mongoose.model("Phone", PhoneSchema);
 export default Phone;

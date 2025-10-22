@@ -1,7 +1,7 @@
 import { verifyAccessToken } from '../utils/jwt';
 import { UnauthorizedError } from '../utils/errors';
 
-export async function authenticate(req, res, next) {
+async function authenticate(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
 
@@ -24,7 +24,7 @@ export async function authenticate(req, res, next) {
   }
 }
 
-export function authorize(...allowedRoles) {
+function authorize(...allowedRoles) {
   return (req, res, next) => {
     if (!req.user) {
       next(new UnauthorizedError('User not authenticated'));
@@ -39,3 +39,8 @@ export function authorize(...allowedRoles) {
     next();
   };
 }
+
+export {
+  authenticate,
+  authorize
+};

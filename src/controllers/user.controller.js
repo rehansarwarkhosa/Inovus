@@ -1,11 +1,7 @@
-import { User } from '../models';
-import { sendSuccess } from '../utils/response';
-import { NotFoundError } from '../utils/errors';
+import { User } from '../models/index.js';
+import { sendSuccess } from '../utils/response.js';
+import { NotFoundError } from '../utils/errors.js';
 
-/**
- * GET /api/users
- * Get all users
- */
 async function getAllUsers(req, res, next) {
   try {
     const users = await User.find({ isDeleted: false })
@@ -18,10 +14,6 @@ async function getAllUsers(req, res, next) {
   }
 }
 
-/**
- * GET /api/users/:id
- * Get user by ID
- */
 async function getUserById(req, res, next) {
   try {
     const { id } = req.params;
@@ -40,10 +32,6 @@ async function getUserById(req, res, next) {
   }
 }
 
-/**
- * PUT /api/users/:id
- * Update user profile
- */
 async function updateUser(req, res, next) {
   try {
     const { id } = req.params;
@@ -55,7 +43,6 @@ async function updateUser(req, res, next) {
       throw new NotFoundError('User not found');
     }
 
-    // Update fields
     if (name) user.name = name;
     if (firstName !== undefined) user.firstName = firstName;
     if (lastName !== undefined) user.lastName = lastName;
@@ -68,10 +55,6 @@ async function updateUser(req, res, next) {
   }
 }
 
-/**
- * DELETE /api/users/:id
- * Soft delete user
- */
 async function deleteUser(req, res, next) {
   try {
     const { id } = req.params;
@@ -91,7 +74,7 @@ async function deleteUser(req, res, next) {
   }
 }
 
-export default {
+export {
   getAllUsers,
   getUserById,
   updateUser,

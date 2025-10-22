@@ -1,16 +1,7 @@
-import mongoose, { Document, Schema, Model } from "mongoose";
+import mongoose from "mongoose";
+const { Schema } = mongoose;
 
-export interface IEmail extends Document {
-  userId: mongoose.Types.ObjectId;
-  email: string;
-  isPrimary?: boolean;
-  isVerified?: boolean;
-  description?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
-
-const EmailSchema = new Schema<IEmail>(
+const EmailSchema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
@@ -26,12 +17,8 @@ const EmailSchema = new Schema<IEmail>(
   { timestamps: true }
 );
 
-/* Unique email constraint */
 EmailSchema.index({ email: 1 }, { unique: true });
-
-/* User + email combo (for safety) */
 EmailSchema.index({ userId: 1, email: 1 }, { unique: true });
 
-const Email: Model<IEmail> =
-  mongoose.models.Email || mongoose.model<IEmail>("Email", EmailSchema);
+const Email = mongoose.models.Email || mongoose.model("Email", EmailSchema);
 export default Email;

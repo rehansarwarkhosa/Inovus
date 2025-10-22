@@ -1,10 +1,6 @@
-import authService from '../services/auth.service';
-import { sendSuccess } from '../utils/response';
+import * as authService from '../services/auth.service.js';
+import { sendSuccess } from '../utils/response.js';
 
-/**
- * POST /api/auth/signup
- * Register a new user
- */
 async function signup(req, res, next) {
   try {
     const { name, email, phone, password, firstName, lastName } = req.body;
@@ -24,10 +20,6 @@ async function signup(req, res, next) {
   }
 }
 
-/**
- * POST /api/auth/login
- * Login user
- */
 async function login(req, res, next) {
   try {
     const { email, password } = req.body;
@@ -40,10 +32,6 @@ async function login(req, res, next) {
   }
 }
 
-/**
- * POST /api/auth/forgot-password
- * Request password reset
- */
 async function forgotPassword(req, res, next) {
   try {
     const { email } = req.body;
@@ -56,10 +44,6 @@ async function forgotPassword(req, res, next) {
   }
 }
 
-/**
- * POST /api/auth/reset-password
- * Reset password with token
- */
 async function resetPassword(req, res, next) {
   try {
     const { token, newPassword } = req.body;
@@ -72,10 +56,6 @@ async function resetPassword(req, res, next) {
   }
 }
 
-/**
- * POST /api/auth/refresh
- * Refresh access token
- */
 async function refreshToken(req, res, next) {
   try {
     const { refreshToken } = req.body;
@@ -88,10 +68,6 @@ async function refreshToken(req, res, next) {
   }
 }
 
-/**
- * GET /api/auth/me
- * Get current user info (protected route)
- */
 async function getCurrentUser(req, res, next) {
   try {
     sendSuccess(res, { user: req.user }, 'User retrieved successfully');
@@ -100,7 +76,7 @@ async function getCurrentUser(req, res, next) {
   }
 }
 
-export default {
+export {
   signup,
   login,
   forgotPassword,

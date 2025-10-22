@@ -1,43 +1,13 @@
-import { User, IUser, Email, Phone } from '../models';
+import { User, Email, Phone } from '../models/index.js';
 import {
   ConflictError,
   UnauthorizedError,
   NotFoundError,
   ValidationError,
-} from '../utils/errors';
-import { generateAccessToken, generateRefreshToken } from '../utils/jwt';
+} from '../utils/errors.js';
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.js';
 
-export interface SignupData {
-  name: string;
-  email: string;
-  phone: string;
-  password: string;
-  firstName?: string;
-  lastName?: string;
-}
-
-export interface LoginData {
-  email: string;
-  password: string;
-}
-
-export interface AuthResponse {
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    firstName?: string;
-    lastName?: string;
-    role?: string;
-  };
-  accessToken: string;
-  refreshToken: string;
-}
-
-/**
- * Register a new user with email and phone
- */
-async function signup(data: SignupData): Promise<AuthResponse> {
+async function signup(data) {
   const { name, email, phone, password, firstName, lastName } = data;
 
   // Check if email already exists
@@ -100,22 +70,18 @@ async function signup(data: SignupData): Promise<AuthResponse> {
   };
 }
 
-/**
- * Login user with email and password
- */
-async function login(data: LoginData): Promise<AuthResponse> {
+async function login(data) {
   const { email, password } = data;
 
-  // Find email record
   const emailRecord = await Email.findOne({
     email: email.toLowerCase(),
-  }).populate<{ userId: IUser }>('userId');
+  }).populate('userId');
 
   if (!emailRecord || !emailRecord.userId) {
     throw new UnauthorizedError('Invalid email or password');
   }
 
-  const user = emailRecord.userId as IUser;
+  const user = emailRecord.userId;
 
   // Check if user is deleted
   if (user.isDeleted) {
@@ -152,24 +118,18 @@ async function login(data: LoginData): Promise<AuthResponse> {
   };
 }
 
-/**
- * Request password reset
- * TODO: Integrate with Twilio/SendGrid to send reset token via email/SMS
- */
-async function forgotPassword(email: string): Promise<{ message: string }> {
-  // Find email record
+async function forgotPassword(email) {
   const emailRecord = await Email.findOne({
     email: email.toLowerCase(),
-  }).populate<{ userId: IUser }>('userId');
+  }).populate('userId');
 
-  // Don't reveal if email exists or not (security best practice)
   if (!emailRecord || !emailRecord.userId) {
     return {
       message: 'If the email exists, a password reset link has been sent',
     };
   }
 
-  const user = emailRecord.userId as IUser;
+  const user = emailRecord.userId;
 
   if (user.isDeleted) {
     return {
@@ -185,26 +145,12 @@ async function forgotPassword(email: string): Promise<{ message: string }> {
   };
 }
 
-/**
- * Reset password with token
- * TODO: Implement after Twilio/SendGrid integration
- */
-async function resetPassword(
-  token: string,
-  newPassword: string
-): Promise<{ message: string }> {
-  // TODO: Verify reset token and update password
+async function resetPassword(token, newPassword) {
   throw new Error('Password reset not yet implemented');
 }
 
-/**
- * Refresh access token using refresh token
- */
-async function refreshAccessToken(refreshToken: string): Promise<{
-  accessToken: string;
-}> {
+async function refreshAccessToken(refreshToken) {
   try {
-    const { verifyRefreshToken } = require('../utils/jwt');
     const decoded = verifyRefreshToken(refreshToken);
 
     // Verify user still exists and is active
@@ -228,7 +174,7 @@ async function refreshAccessToken(refreshToken: string): Promise<{
   }
 }
 
-export default {
+export {
   signup,
   login,
   forgotPassword,
